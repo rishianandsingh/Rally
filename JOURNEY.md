@@ -21,8 +21,12 @@
   - `python --version` failed because the venv wasn't active (macOS has no bare `python` outside a venv).
   - VS Code warned about global packages because its selected interpreter wasn't `.venv`. Fix: Python: Select Interpreter.
   - `gh` was not installed (command not found). Fix: `brew install gh`.
-  
+
 - **Lesson:** Activating a venv in a terminal and selecting an interpreter in VS Code are separate things, and both need to be set.
+
+
+
+
 
 ## Entry 2: Data layer
 
