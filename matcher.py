@@ -38,6 +38,10 @@ def from_row(row: sqlite3.Row) -> Candidate:
     )
 
 
+
+
+
+
 COMPLEMENTARITY_WEIGHT = 0.6
 OVERLAP_WEIGHT = 0.4
 
@@ -54,3 +58,32 @@ def score_pair(a: Candidate, b: Candidate) -> float:
     complementarity = 1.0 - _jaccard(a.skills, b.skills)
     overlap = _jaccard(a.availability, b.availability)
     return COMPLEMENTARITY_WEIGHT * complementarity + OVERLAP_WEIGHT * overlap
+
+
+
+
+def _mean_score(candidate: Candidate, team: list[Candidate]) -> float:
+    return sum(score_pair(candidate, m) for m in team) / len(team)
+
+
+def form_teams(candidates: list[Candidate], team_size: int) -> list[list[int]]:
+    """Greedy grouping. Returns teams as lists of student_ids.
+
+    Deterministic: candidates are processed in student_id order and ties
+    go to the lowest id. The last team may be smaller than team_size.
+    """
+    if team_size < 2:
+        raise ValueError("team_size must be >= 2")
+
+    pool = sorted(candidates, key=lambda c: c.student_id)
+    teams: list[list[int]] = []
+
+    while pool:
+        team = [pool.pop(0)]
+        while pool and len(team) < team_size:
+            best = max(pool, key=lambda c: _mean_score(c, team))
+            pool.remove(best)
+            team.append(best)
+        teams.append([m.student_id for m in team])
+
+    return teams
