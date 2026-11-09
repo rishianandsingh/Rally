@@ -48,3 +48,34 @@
   - The AI told me to use `:memory:` for tests, which was wrong: each connection gets its own empty database. Used `tmp_path` instead.
 
 - **Lesson:** SQLite ignores foreign keys unless `PRAGMA foreign_keys = ON` is set on every connection. Verified by testing that a nonexistent student id is rejected.
+
+
+
+
+
+## Entry 3: Mon Nov 9, matching logic
+
+**Built:** `matcher.py` with a `Candidate` dataclass, a DB row adapter (`from_row`), `score_pair`, and a greedy `form_teams`. Added 6 pytest tests in `tests/test_matcher.py`. Matcher logic is pure Python with no SQLite or UI dependencies, so it can be tested with hand-built inputs.
+
+**AI prompts used:** Asked Claude to elaborate the Monday plan step by step. Followed each step in order, pasting terminal output and errors back for debugging.
+
+**Design decisions:**
+- Pair score = 0.6 * skill complementarity + 0.4 * availability overlap, both Jaccard-based. Weights are module constants.
+- Skills are stored in the DB as a JSON list string, so the adapter uses `json.loads`.
+- Availability is stored as a style label, so I mapped each of the 3 styles to a set of time slots, with partial overlaps so the overlap score is graded and not just 0 or 1.
+- Unknown availability styles raise a `ValueError` instead of silently producing an empty set.
+- Team formation is deterministic: processed in student id order, ties go to the lowest id. Leftover students form a smaller final team and nobody is dropped.
+
+**What broke and how I fixed it:**
+- The first adapter assumed comma-separated skills, but the DB stores JSON lists. Checked real rows with a query and switched to `json.loads`.
+- A column name guess (`availability`) was wrong. The real column is `availability_style`. Fixed by running `pragma table_info(students)`.
+- zsh hung on a `quote>` prompt because an apostrophe in a pasted comment opened a quote. Fixed by removing the comment.
+- `python3 -c` failed with an IndentationError because the pasted code block was indented. Fixed by pasting it flush left.
+- pytest reported 20 passed instead of 6 because it also collected other test files. Confirmed by running `tests/test_matcher.py` alone.
+
+**Known limitations:**
+- Greedy grouping is order-dependent: the lowest id is seeded first and picks the best partners.
+- Two students with empty skill sets would score as perfectly complementary. Seed data has none, so I left it.
+- With only 3 availability styles, teams end up segmented by style. The style-to-slots mapping is my assumption, not user data.
+
+**Result:** 28 seed students formed 7 teams of 4. Mean pair scores ranged from 0.85 to 0.97 with no sharp drop in later teams. Skills were mixed within every team and every team shared one availability style.
