@@ -1,4 +1,5 @@
 from __future__ import annotations
+from options import AVAILABILITY_STYLES, BATCHES, LANGUAGES, SKILLS
 
 import itertools
 import random
@@ -13,14 +14,6 @@ FIRST_NAMES = [
     "Ananya", "Arjun", "Saanvi", "Kiran", "Neha", "Dev", "Tara",
 ]
 LAST_NAMES = ["Sharma", "Iyer", "Gupta", "Reddy", "Khan", "Das", "Nair", "Singh"]
-SKILLS = [
-    "Python", "Machine Learning", "Data Structures", "Frontend", "Backend",
-    "SQL", "UI Design", "Git", "Statistics", "Docker",
-    "Technical Writing", "Presentation",
-]
-LANGUAGES = ["English", "Hindi", "Tamil", "Bengali"]
-AVAILABILITY_STYLES = ["weekday evenings", "weekends", "late nights"]
-BATCHES = ["2026-A", "2026-B", "2026-C"]
 NOTES = [
     "Need a frontend person",
     "Strong on the ML side, weak on deployment",
