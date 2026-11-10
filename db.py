@@ -104,6 +104,16 @@ def _row_to_student(row: sqlite3.Row) -> Student:
     )
 
 
+def _row_to_event(row: sqlite3.Row) -> Event:
+    return Event(
+        id=row["id"],
+        title=row["title"],
+        description=row["description"],
+        team_size=row["team_size"],
+        date=row["date"],
+    )
+
+
 def _new_id(cursor: sqlite3.Cursor) -> int:
     if cursor.lastrowid is None:
         raise RuntimeError("Insert did not produce a row id")
@@ -194,3 +204,54 @@ def get_entries(
             (event_id,),
         ).fetchall()
     return [(_row_to_student(r), r["note"]) for r in rows]
+
+
+def list_students(*, db_path: Path = DB_PATH) -> list[Student]:
+    with get_conn(db_path) as conn:
+        rows = conn.execute("SELECT * FROM students ORDER BY name").fetchall()
+    return [_row_to_student(r) for r in rows]
+
+
+def get_student(student_id: int, *, db_path: Path = DB_PATH) -> Student | None:
+    with get_conn(db_path) as conn:
+        row = conn.execute(
+            "SELECT * FROM students WHERE id = ?", (student_id,)
+        ).fetchone()
+    return _row_to_student(row) if row else None
+
+
+def update_student(
+    student_id: int,
+    name: str,
+    batch: str,
+    skills: list[str],
+    languages: list[str],
+    availability_style: str,
+    *,
+    db_path: Path = DB_PATH,
+) -> None:
+    if not name.strip():
+        raise ValueError("name must not be empty")
+    with get_conn(db_path) as conn:
+        cur = conn.execute(
+            "UPDATE students SET name = ?, batch = ?, skills = ?, "
+            "languages = ?, availability_style = ?, last_updated = ? "
+            "WHERE id = ?",
+            (
+                name.strip(),
+                batch,
+                json.dumps(skills),
+                json.dumps(languages),
+                availability_style,
+                _utc_now_iso(),
+                student_id,
+            ),
+        )
+        if cur.rowcount == 0:
+            raise ValueError(f"No student with id {student_id}")
+
+
+def list_events(*, db_path: Path = DB_PATH) -> list[Event]:
+    with get_conn(db_path) as conn:
+        rows = conn.execute("SELECT * FROM events ORDER BY date, id").fetchall()
+    return [_row_to_event(r) for r in rows]
