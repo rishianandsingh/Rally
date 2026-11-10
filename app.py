@@ -12,13 +12,12 @@ def main() -> None:
     role = st.sidebar.radio("I am a", ["Student", "Teacher"])
 
     if role == "Student":
+        student_id = student.select_student()
         page = st.sidebar.radio("Page", ["My Profile", "Browse Events"])
         if page == "My Profile":
-            student.render_profile()
+            student.render_profile(student_id)
         else:
-            student.render_events()
-    else:
-        teacher.render_teacher()
+            student.render_events(student_id)
 
 
 if __name__ == "__main__":
