@@ -1,2 +1,25 @@
+from __future__ import annotations
+
 import streamlit as st
-st.title("Rally")
+
+from ui import student, teacher
+
+st.set_page_config(page_title="Rally", page_icon="🤝", layout="wide")
+
+
+def main() -> None:
+    st.sidebar.title("Rally")
+    role = st.sidebar.radio("I am a", ["Student", "Teacher"])
+
+    if role == "Student":
+        page = st.sidebar.radio("Page", ["My Profile", "Browse Events"])
+        if page == "My Profile":
+            student.render_profile()
+        else:
+            student.render_events()
+    else:
+        teacher.render_teacher()
+
+
+if __name__ == "__main__":
+    main()
