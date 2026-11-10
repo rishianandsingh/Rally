@@ -79,3 +79,34 @@
 - With only 3 availability styles, teams end up segmented by style. The style-to-slots mapping is my assumption, not user data.
 
 **Result:** 28 seed students formed 7 teams of 4. Mean pair scores ranged from 0.85 to 0.97 with no sharp drop in later teams. Skills were mixed within every team and every team shared one availability style.
+
+
+
+
+
+## Entry 4: Tue Nov 10, student pages
+
+**Goal:** Student UI (identity picker, profile create/edit, event browse with suggested teammates). UI code only calls `db.py` and `matcher.py`.
+
+**Prompts and AI output**
+- Asked for a step-by-step plan for Tuesday from the saved Rally plan; worked through it one step at a time.
+- AI found that `db.py` lacked `list_students`, `get_student`, `update_student` and `list_events`, and wrote all four with 6 tests.
+- AI proposed `options.py` as the single source of truth for skills, languages, batches and availability styles (availability derived from `matcher.STYLE_TO_SLOTS`).
+- AI wrote `from_student` (adapter) and `suggest_teammates` (top-k ranking) for `matcher.py`, plus 6 tests.
+
+**What I changed or decided**
+- Added `app.py` plus `ui/` package; sidebar role switch and student picker (no login).
+- `update_student` bumps `last_updated`, so the staleness column in suggestions is meaningful.
+- Left `form_teams` for the teacher side; the student page needed a ranked top-5, not a grouping.
+- Skipped the shared-fixture cleanup (`conftest.py`) for now; duplicated fixture in the new test file.
+
+**What broke**
+- `SyntaxError: from __future__ imports must occur at the beginning of the file`. I put the `TYPE_CHECKING` block above the `__future__` line, which broke every test file that imports `matcher`. Fix: `__future__` import first, always.
+- Confused by AI instructions on where to put `_row_to_event` and the new test file; had to ask for clarification. Lesson: ask for exact file and position when a step is ambiguous.
+
+**What I learned**
+- Fixtures are scoped per file; `conftest.py` is where shared ones live.
+- Streamlit forbids writing a widget's session-state key after the widget renders, hence the pending-id pattern for jumping to a new profile.
+- Duplicate join in a second tab doesn't error: the rerun re-reads the DB and hides the form.
+
+**State at end of day:** 32 tests passing, profile and event pages working, committed and pushed.
