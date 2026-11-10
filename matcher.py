@@ -3,6 +3,10 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from db import Student
 
 STYLE_TO_SLOTS: dict[str, frozenset[str]] = {
     "late nights": frozenset({"weekday_night", "weekend_night"}),
@@ -26,18 +30,28 @@ def _skills(raw: str) -> frozenset[str]:
     return frozenset(str(s).strip().lower() for s in items if str(s).strip())
 
 
-def from_row(row: sqlite3.Row) -> Candidate:
-    style = row["availability_style"].strip().lower()
-    slots = STYLE_TO_SLOTS.get(style)
+def _slots_for(style: str) -> frozenset[str]:
+    key = style.strip().lower()
+    slots = STYLE_TO_SLOTS.get(key)
     if slots is None:
-        raise ValueError(f"Unknown availability style: {style!r}")
+        raise ValueError(f"Unknown availability style: {key!r}")
+    return slots
+
+
+def from_row(row: sqlite3.Row) -> Candidate:
     return Candidate(
         student_id=row["id"],
         skills=_skills(row["skills"]),
-        availability=slots,
+        availability=_slots_for(row["availability_style"]),
     )
 
 
+def from_student(s: Student) -> Candidate:
+    return Candidate(
+        student_id=s.id,
+        skills=frozenset(x.strip().lower() for x in s.skills if x.strip()),
+        availability=_slots_for(s.availability_style),
+    )
 
 
 
@@ -87,3 +101,18 @@ def form_teams(candidates: list[Candidate], team_size: int) -> list[list[int]]:
         teams.append([m.student_id for m in team])
 
     return teams
+
+
+def suggest_teammates(
+    me: Candidate, others: list[Candidate], k: int = 5
+) -> list[tuple[int, float]]:
+    """Top-k (student_id, score) for `me`, best first. Ties go to the lowest id."""
+    if k < 1:
+        raise ValueError("k must be >= 1")
+    scored = [
+        (c.student_id, score_pair(me, c))
+        for c in others
+        if c.student_id != me.student_id
+    ]
+    scored.sort(key=lambda t: (-t[1], t[0]))
+    return scored[:k]
