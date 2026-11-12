@@ -44,3 +44,12 @@ def test_team_size_below_two_raises():
 
     with pytest.raises(ValueError):
         form_teams([cand(1, {"a"}, {"weekend_am"})], 1)
+
+
+def test_empty_skills_get_neutral_score() -> None:
+    empty = Candidate(1, frozenset(), frozenset({"weekday_eve"}))
+    full = Candidate(2, frozenset({"python"}), frozenset({"weekday_eve"}))
+    different = Candidate(3, frozenset({"design"}), frozenset({"weekday_eve"}))
+
+    assert score_pair(empty, full) < score_pair(different, full)
+    assert score_pair(empty, full) == score_pair(full, empty)

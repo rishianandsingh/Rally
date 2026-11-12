@@ -58,6 +58,7 @@ def from_student(s: Student) -> Candidate:
 
 COMPLEMENTARITY_WEIGHT = 0.6
 OVERLAP_WEIGHT = 0.4
+NEUTRAL_COMPLEMENTARITY = 0.5
 
 
 def _jaccard(a: frozenset[str], b: frozenset[str]) -> float:
@@ -67,9 +68,14 @@ def _jaccard(a: frozenset[str], b: frozenset[str]) -> float:
     return len(a & b) / len(union)
 
 
+
+
 def score_pair(a: Candidate, b: Candidate) -> float:
     """Higher = better teammates. Symmetric: score_pair(a, b) == score_pair(b, a)."""
-    complementarity = 1.0 - _jaccard(a.skills, b.skills)
+    if a.skills and b.skills:
+        complementarity = 1.0 - _jaccard(a.skills, b.skills)
+    else:
+        complementarity = NEUTRAL_COMPLEMENTARITY
     overlap = _jaccard(a.availability, b.availability)
     return COMPLEMENTARITY_WEIGHT * complementarity + OVERLAP_WEIGHT * overlap
 
