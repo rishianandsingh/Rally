@@ -18,6 +18,8 @@ def main() -> None:
             student.render_profile(student_id)
         else:
             student.render_events(student_id)
+    else:
+        teacher.render_teacher()
 
 
 if __name__ == "__main__":
