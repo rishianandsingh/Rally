@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ui import student, teacher
+from ui import about, student, teacher
 
 st.set_page_config(page_title="Rally", page_icon="🤝", layout="wide")
 
 
 def main() -> None:
     st.sidebar.title("Rally")
-    role = st.sidebar.radio("I am a", ["Student", "Teacher"])
+    role = st.sidebar.radio("I am a", ["Student", "Teacher", "About"])
 
     if role == "Student":
         student_id = student.select_student()
@@ -18,8 +18,10 @@ def main() -> None:
             student.render_profile(student_id)
         else:
             student.render_events(student_id)
-    else:
+    elif role == "Teacher":
         teacher.render_teacher()
+    else:
+        about.render_about()
 
 
 if __name__ == "__main__":
