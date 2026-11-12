@@ -110,3 +110,37 @@
 - Duplicate join in a second tab doesn't error: the rerun re-reads the DB and hides the form.
 
 **State at end of day:** 32 tests passing, profile and event pages working, committed and pushed.
+
+
+
+
+
+## Entry 5 (Wed, Nov 11): Teacher page, About page, matcher fix
+
+### Entry 1: Teacher page (Create Event behind a PIN)
+- **Prompt:** Asked AI to elaborate Wednesday's step 1 from the plan (Create Event form behind a PIN).
+- **AI output:** `config.py` (PIN read from the `RALLY_TEACHER_PIN` env var), `validation.py` (`EventInput` dataclass and `validate_event`), and `ui/teacher.py` (PIN gate with `hmac.compare_digest`, `st.form` for title, description, team size, date).
+- **What I changed:** Kept the existing function name `render_teacher` in `ui/teacher.py` instead of the AI's `render_teacher_page`. Placed `config.py` and `validation.py` beside `db.py`, and `teacher.py` stayed in `ui/`.
+- **What broke:** Switching to Teacher showed a blank page. `app.py` had no branch for Teacher, so nothing rendered. Added an `else: teacher.render_teacher()` branch.
+- **Learned:** `export` prints nothing on success and only lasts for that terminal session. A blank Streamlit page usually means a missing route, not a crash.
+- **Tests:** 3 new `validate_event` tests (valid event, empty title, past date). Suite at 35 passing.
+- **Commit:** `feat: teacher event creation behind PIN gate`
+
+### Entry 2: About page
+- **Prompt:** Asked AI for Step 2, the About section explaining how matching works.
+- **AI output:** `ui/about.py` with "How matching works" and "Known limitations" text, wired into the sidebar.
+- **What broke:** The About text didn't match the code. It said grouping starts from the highest-scoring pair and referred to a function `group_students`. The real function is `form_teams`, which starts from the lowest student_id and adds the best mean-score fit. I caught this by reading `matcher.py` against the text.
+- **What I changed:** Rewrote the About text to match `matcher.py`: 60% skill complementarity, 40% availability overlap, greedy order-dependent grouping, a smaller last team possible, top 5 suggestions. Added the limitations: languages and event notes are not scored, availability is only three styles, and there is no real login.
+- **Learned:** Docs written from a description of the code drift from the code. Verify them against the source.
+- **Commit:** `feat: add About page explaining matching logic`
+
+### Entry 3: Matcher bug (empty skills)
+- **Found while:** Checking the About text against `matcher.py`.
+- **Bug:** `score_pair` computed `1 - jaccard(skills)`. Two empty skill sets give `jaccard = 0.0`, so a profile with no skills got the maximum complementarity score against everyone.
+- **Fix:** Added `NEUTRAL_COMPLEMENTARITY = 0.5`, used whenever either profile has no skills.
+- **Test:** Added `test_empty_skills_get_neutral_score` to `tests/test_matcher.py`. It checks that an empty-skills profile scores below a genuinely complementary one and that the score stays symmetric. Suite at 36 passing.
+- **Commits:** `fix: neutral skill score when a profile has no skills`, `docs: note neutral score for empty skills on About page`
+
+### Known issues carried forward
+- The shared PIN is not real authentication. The Thursday GitHub issue covers replacing it with role-based authentication.
+- `_slots_for` raises `ValueError` on an unknown availability style. This is safe only while the profile form offers the three styles.
