@@ -51,6 +51,6 @@ pytest
 
 ## Known limitations
 
-- No real login. Teachers use a PIN only. See [Replace PIN with proper role-based authentication]([<issue-url>](https://github.com/rishianandsingh/Rally/issues/1)).
+- No real login. Teachers use a PIN only. See [Replace PIN with proper role-based authentication](https://github.com/rishianandsingh/Rally/issues/1).
 - Events can be created and listed, but not edited or deleted.
 - No notifications.
