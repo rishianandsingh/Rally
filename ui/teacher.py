@@ -20,7 +20,12 @@ def render_teacher() -> None:
     if not _is_authed():
         pin = st.text_input("Teacher PIN", type="password")
         if st.button("Unlock"):
-            if hmac.compare_digest(pin, get_teacher_pin()):
+            try:
+                expected = get_teacher_pin()
+            except RuntimeError as e:
+                st.error(str(e))
+                return
+            if hmac.compare_digest(pin.encode(), expected.encode()):
                 st.session_state["teacher_authed"] = True
                 st.rerun()
             else:
