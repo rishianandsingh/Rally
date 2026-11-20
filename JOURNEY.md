@@ -1,146 +1,163 @@
-# Journey
+## PART 1 ==> Choosing the topic
+#TASK:
+- Make a basic website with the freedom of choosing ant topic of your choice. 
+- The website should have the basic UI functionalities and if possible add a model layer on top of it.
+- Create a repository of the whole project and push it all on github, if possible add an issue on the repo.
+- Create proper documentation of the whole journey of your thought-process and the planning/steps you took.
 
-**Scope:** Rally is a Streamlit app where teachers post Zenith events and students find teammates using structured profile fields.
+#MENTOR RULES: 
+- Use any ai tools that you want.
+- Restricted to using python since that's all that we know as of now.
 
+#CONSTRAINTS:
+- Solo task over the week no evaluation criteria its just a starter task to nudge us in the right direction so the model doesnt have to be perfect.
 
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+- The above was the things we were told and I worded them out in a prompt and fed it to Claude. With this provided claude provided me starter topic as:
+  Topic: Iris species classifier. I’m choosing it over an exam-score predictor because that one needs a fake dataset, which makes the model meaningless. Iris ships inside scikit-learn, so you skip all data wrangling and spend the week on structure, Git, and documentation, which is what the task is really about.
 
-## Entry 1: Environment setup
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+#MY COURSE OF ACTION FOR CHOOSING THE TOPIC:
+- I told claude the present few issues and bits and pieces of what was going in my college right now:
+      Okay so recently the 300 students across 3 batches have been divided in groups based on their performances but each group has similar things they are working on I'll givr you the idea from my group i.e. the group 1 the top 10 to 15 percentile. We are told that we have 2 major goals to achieve before the end of semester: 
+      1) 200 problems solved on codeforces (emerged from problem solving and python side of zenith) - we are given 3 problems daily to achieve that task by our problem solving teacher and few videos/leetcode by our python teacher/co-founder
+      2) a real end to end project (from fullstack side of things) - there has been minimal to no work on this end yet maybe we will be told what to do soon or perhaps we are expected to go on about it ourselves
+    
+    
+      Another thing is whenever there are events there is a lot of miscommunication/communication gap among students like for example the 24 hour open source eval thing the teachers conduting it didnt know that we dont even know the basics of pull request and all on github and were expected to already know which resulted in a teacher teaching that amidst of that chaos. Also events like these clash with our exams etc at times
+    
+    
+      The chaotic whatsapp thread example is very true the students majority of time spam stuff on groups even official making important things being lost in the spams
+    
+    
+      From the student side friction whenever there is a open to all or mandatory thing coming up and you have to make teams of 4 or 3 among students it gets very chaotic and many end up even 3 days later saying in general whatsapp groupss that "im available for this and this project if anyone needs a teammate msg me".
+    
+      Also thing is most examples you gave kike resources deadlines etc most of it is resolved only with the already existing LMS of zenith - website with student/teacher portals. These were all that came to mind for now ill add on if i rmr more issues
+    
 
-- **Prompt:** Asked for Mac-specific (M5 Air, VS Code terminal) steps for Saturday's Rally foundation: venv, dependencies, .gitignore, JOURNEY.md, Streamlit check, GitHub repo.
+- After this prompt and claude's recommendation of few potential topics, I gave a feedback as how Zenith already has a LMS that solves a lot of issues but at the end we zoned in on the topic of a "team-matcher website" which emerged out as rally.
 
-- **AI output:** A 10-step setup covering Python venv, `pip install streamlit pytest`, `.gitignore` (including `.DS_Store` and `._*`), a placeholder `app.py`, git init/commit, and `gh repo create`.
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+## PART 2 ==> WHAT CHANGED ON THE SUGGESTED AI PLAN
+#FEEDBACK I GAVE ON THE FIRST PLAN (WHAT CHANGED)
+- I did not want a full profile per event. I asked for one main centered profile per student for the website plus a short description to be added when an event happens, describing what one brings to the table for others to see.
+- I asked whether a demo without a database would have enough to show, AI response:
+        ``` Python ships with sqlite3, so there’s no server and no setup. Use it. A CSV breaks as soon as you need to join profiles to events. What makes the demo look good is a seed script that loads 25-30 fake students with varied skills, plus 2-3 sample events. Without that, a matcher with 1 user has nothing to match.```
+- I asked it to add a separate teacher portal where they can themselves add an event with it's description and the size of the team etc, AI response:
+        ``` A real teacher portal means authentication and roles, and that is where week-long projects die. The thin version is a single “Create Event” form on a separate Streamlit page. It writes to the same events table the students already read from. You’ve already budgeted that table, so the extra cost is about half a day.```
+- Teacher portal therefore only has a thin version due to the time constraint and misses these:
+            (1) No real login
+            (2) No editing or deleting events. Create and list only
+            (3) No notifications.
 
-- **What I changed:**
-  - Used Python 3.13 via Homebrew instead of the system 3.15, because 3.15 is too new for prebuilt wheels of Streamlit's dependencies.
-  - Project lives on an external drive (`/Volumes/WORK`), so I checked the filesystem format before creating the venv.
-  - Installed `gh` via Homebrew.
-  - Renamed the project from "Team Matcher" to "Rally".
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+## PART 3 ==> THE BROADER PLAN
+- I asked for a step-by-step plan for the whole week. The project became Rally: teachers post Zenith events, students find teammates for them.
 
-- **What broke:**
-  - Ran `python venv .venv` without `-m`, so Python tried to run `venv` as a script. Fix: `python3.13 -m venv .venv`.
-  - `python --version` failed because the venv wasn't active (macOS has no bare `python` outside a venv).
-  - VS Code warned about global packages because its selected interpreter wasn't `.venv`. Fix: Python: Select Interpreter.
-  - `gh` was not installed (command not found). Fix: `brew install gh`.
+#DATA MODEL:
+- students: name, batch, skills, languages, availability style, last_updated
+- events: title, description, team_size, date
+- event_entries: student_id, event_id, short event note
 
-- **Lesson:** Activating a venv in a terminal and selecting an interpreter in VS Code are separate things, and both need to be set.
+#SCOPE CUTS:
+- No real login. A Student/Teacher switch in the sidebar, plus a teacher PIN from config.
+- The teacher side only creates and lists events. No edit or delete.
+- No notifications.
+- Event notes are shown as free text and not parsed.
+- Matching uses structured profile fields only.
 
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+## PART 4 ==>  DAY WISE STEP BY STEP PLAN I GOT AS THE RESPONSE FROM PART 3
 
+#AI RESPONSE:
+```diff
+#Step-by-step plan (Sat Nov 7 → Fri Nov 13)
+#
+#Sat: Foundation
+#
+#Create the repo, venv, requirements.txt, JOURNEY.md, and a .gitignore that excludes the .db file.
+#Write the scope sentence: “A Streamlit app where teachers post Zenith events and students find teammates for them.”
+#Log this conversation as entry #1 and commit.
+#
+#Sun: Data layer (db.py, no UI)
+#
+#Create the tables students, events, event_entries.
+#Add typed functions: add_student, create_event, add_entry, get_entries(event_id).
+#Write seed.py with 25-30 fake students and 3 events. Commit.
+#
+#Mon: Matching logic (matcher.py, no UI)
+#
+#Score two students by skill complementarity and availability overlap.
+#Greedy grouping into teams of N, where N comes from the event’s team_size.
+#Write 3-4 plain pytest tests with known inputs. This is the “model” piece and your cleanest portfolio signal.
+#
+#Tue: Student pages
+#
+#Page for profile creation/edit.
+#Page to browse events, add an event note, and see suggested teammates with their last_updated dates.
+#
+#Wed: Teacher page and polish
+#
+#“Create Event” form (title, description, team size, date), with a PIN gate.
+#Add an About section explaining how matching works.
+#
+#Thu: Documentation and issue
+#
+#Write the README with a screenshot and run instructions.
+#Finalize JOURNEY.md.
+#Open the issue: “Replace PIN with proper role-based authentication”.
+#
+#Fri: Buffer and demo.
+#
+#Risk to watch: Monday is the heaviest day. If matching slips, ship a simple version, which is rank by shared availability and display the top 5. A working basic matcher beats a half-built clever one. 
+```
 
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+## PART 5 ==> WHAT I GATHERED FROM THE EVENT
 
+#HABITS I SET:
+- Keep logic separate from UI (the UI only calls logic functions).
+- Commit after every working step with a real message.
+- Log each AI prompt, output, change and breakage.
 
-## Entry 2: Data layer
+#DAY BY DAY BRIEF:
+- For each day I went back to the chat and asked for that day's steps in more detail.
 
-- **Prompt:** Asked for an elaborated step-by-step guide for Sunday's data layer (`db.py`, `seed.py`, no UI) from my saved week plan.
+- _Sat: Foundation:_
+ Repo, venv, requirements.txt, .gitignore (excluding the .db), one scope sentence. My system python3 was 3.15, so I made the venv with Homebrew python@3.13 instead. (3.13 has full Apple Silicon wheel coverage, so pip install streamlit pytest just works.)
 
-- **AI output:** Five design calls (JSON text for list columns, `UNIQUE(student_id, event_id)`, foreign keys ON per connection, ISO-8601 UTC timestamps, parameterized queries), then paste-ready blocks for each step.
+Errors/Walls: 
+  gh: command not found - github cli was not installed - brew install gh, then, gh auth login
 
-- **What I built:**
-  - `db.py`: frozen dataclasses, `get_conn()` context manager, schema, `init_db()`, `add_student`, `create_event`, `add_entry`, `get_entries`.
-  - `seed.py`: deterministic (seed 42), 28 students, 3 events, 33 entries, safe to rerun.
-  - `tests/test_db.py` and `tests/test_seed.py`: 14 tests passing, using pytest's `tmp_path` so the real DB is never touched.
+- _Sun: Data layer:_
+ db.py with the three tables and typed functions, plus seed.py with fake students and events.
 
-- **What I changed:**
-  - Added `CHECK (team_size >= 2)` in the schema as a second layer behind the Python validation.
-  - `add_entry` converts the UNIQUE violation into a clean `ValueError`, while a missing student stays an `IntegrityError`.
+Errors/Walls:
+  In db.py VS code put a line through context manager. I thought my code was broken but it still ran, I got to know that apparently that's a warning not an error.
 
-- **What broke:**
-  - Pylance struck through `contextmanager` because `-> Iterator[...]` is deprecated on `@contextmanager` functions. Fix: `Generator[sqlite3.Connection]`.
-  - The AI told me to use `:memory:` for tests, which was wrong: each connection gets its own empty database. Used `tmp_path` instead.
+- _Mon: Matching logic_
+ matcher.py scoring pairs on skill complementarity and availability overlap, greedy grouping into teams of team_size, and a few pytest tests.
 
-- **Lesson:** SQLite ignores foreign keys unless `PRAGMA foreign_keys = ON` is set on every connection. Verified by testing that a nonexistent student id is rejected.
+Errors/Walls:
+  Skills parse wrong -	DB stores a JSON list string, and split(",") leaves brackets and quotes	- json.loads(fix)
 
+- _Tue: Student pages_
+ Commits: student identity picker in the sidebar, profile create/edit form with shared option lists, from_student adapter and suggest_teammates with tests, and the event browse page with the join form and suggested teammates 
 
+Errors/Walls:
+  SyntaxError on matcher.py: I put the TYPE_CHECKING block above from __future__ import annotations. Python needs the __future__ import first, so 3 test files failed at collection. I moved the block below the regular imports and all 32 tests passed.
 
+- _Wed: Teacher page and polish_
+ Teacher event creation behind the PIN gate, and an About page explaining the matching logic. I also fixed a bug where a profile with no skills broke the score, and now give those profiles a neutral skill score.
 
+Errors:
+  1. file layout mismatch the AI thought everything was in the root folder but teacher.py is actually inside ui/ kept the same render_teacher name and put config.py and validation.py alongside db.py
+  2. export command printed nothing so i thought it broke turns out it just stays quiet when it works checked it with echo $RALLY_TEACHER_PIN
+  3. teacher page was blank app.py had no branch for the teacher role so nothing rendered added an else branch calling teacher.render_teacher()
+  4. about text didnt match the code cause the AI wrote it from a description named group_students which doesnt even exist instead of form_teams and said it starts from the best pair when it actually starts from the lowest student_id checked matcher.py and rewrote it
+  5. empty skills bug in score_pair two empty skill sets gave jaccard 0 so complementarity came out as 1.0 which is a perfect score changed it to a neutral 0.5 and added a test
+  6. confusing test counts running pytest on tests/test_matcher.py showed 7 passed while the full run showed 36 not a bug one just runs that single file and the other runs everything
 
-## Entry 3: Mon Nov 9, matching logic
+- _Thu: Docs and wrap-up_
+ Screenshot of the working app, a fix so a non-ASCII PIN is handled and a clean error shows when the PIN is unset, the final README, and a markdown link fix in the README
 
-**Built:** `matcher.py` with a `Candidate` dataclass, a DB row adapter (`from_row`), `score_pair`, and a greedy `form_teams`. Added 6 pytest tests in `tests/test_matcher.py`. Matcher logic is pure Python with no SQLite or UI dependencies, so it can be tested with hand-built inputs.
-
-**AI prompts used:** Asked Claude to elaborate the Monday plan step by step. Followed each step in order, pasting terminal output and errors back for debugging.
-
-**Design decisions:**
-- Pair score = 0.6 * skill complementarity + 0.4 * availability overlap, both Jaccard-based. Weights are module constants.
-- Skills are stored in the DB as a JSON list string, so the adapter uses `json.loads`.
-- Availability is stored as a style label, so I mapped each of the 3 styles to a set of time slots, with partial overlaps so the overlap score is graded and not just 0 or 1.
-- Unknown availability styles raise a `ValueError` instead of silently producing an empty set.
-- Team formation is deterministic: processed in student id order, ties go to the lowest id. Leftover students form a smaller final team and nobody is dropped.
-
-**What broke and how I fixed it:**
-- The first adapter assumed comma-separated skills, but the DB stores JSON lists. Checked real rows with a query and switched to `json.loads`.
-- A column name guess (`availability`) was wrong. The real column is `availability_style`. Fixed by running `pragma table_info(students)`.
-- zsh hung on a `quote>` prompt because an apostrophe in a pasted comment opened a quote. Fixed by removing the comment.
-- `python3 -c` failed with an IndentationError because the pasted code block was indented. Fixed by pasting it flush left.
-- pytest reported 20 passed instead of 6 because it also collected other test files. Confirmed by running `tests/test_matcher.py` alone.
-
-**Known limitations:**
-- Greedy grouping is order-dependent: the lowest id is seeded first and picks the best partners.
-- Two students with empty skill sets would score as perfectly complementary. Seed data has none, so I left it.
-- With only 3 availability styles, teams end up segmented by style. The style-to-slots mapping is my assumption, not user data.
-
-**Result:** 28 seed students formed 7 teams of 4. Mean pair scores ranged from 0.85 to 0.97 with no sharp drop in later teams. Skills were mixed within every team and every team shared one availability style.
-
-
-
-
-
-## Entry 4: Tue Nov 10, student pages
-
-**Goal:** Student UI (identity picker, profile create/edit, event browse with suggested teammates). UI code only calls `db.py` and `matcher.py`.
-
-**Prompts and AI output**
-- Asked for a step-by-step plan for Tuesday from the saved Rally plan; worked through it one step at a time.
-- AI found that `db.py` lacked `list_students`, `get_student`, `update_student` and `list_events`, and wrote all four with 6 tests.
-- AI proposed `options.py` as the single source of truth for skills, languages, batches and availability styles (availability derived from `matcher.STYLE_TO_SLOTS`).
-- AI wrote `from_student` (adapter) and `suggest_teammates` (top-k ranking) for `matcher.py`, plus 6 tests.
-
-**What I changed or decided**
-- Added `app.py` plus `ui/` package; sidebar role switch and student picker (no login).
-- `update_student` bumps `last_updated`, so the staleness column in suggestions is meaningful.
-- Left `form_teams` for the teacher side; the student page needed a ranked top-5, not a grouping.
-- Skipped the shared-fixture cleanup (`conftest.py`) for now; duplicated fixture in the new test file.
-
-**What broke**
-- `SyntaxError: from __future__ imports must occur at the beginning of the file`. I put the `TYPE_CHECKING` block above the `__future__` line, which broke every test file that imports `matcher`. Fix: `__future__` import first, always.
-- Confused by AI instructions on where to put `_row_to_event` and the new test file; had to ask for clarification. Lesson: ask for exact file and position when a step is ambiguous.
-
-**What I learned**
-- Fixtures are scoped per file; `conftest.py` is where shared ones live.
-- Streamlit forbids writing a widget's session-state key after the widget renders, hence the pending-id pattern for jumping to a new profile.
-- Duplicate join in a second tab doesn't error: the rerun re-reads the DB and hides the form.
-
-**State at end of day:** 32 tests passing, profile and event pages working, committed and pushed.
-
-
-
-
-
-## Entry 5 (Wed, Nov 11): Teacher page, About page, matcher fix
-
-### Entry 1: Teacher page (Create Event behind a PIN)
-- **Prompt:** Asked AI to elaborate Wednesday's step 1 from the plan (Create Event form behind a PIN).
-- **AI output:** `config.py` (PIN read from the `RALLY_TEACHER_PIN` env var), `validation.py` (`EventInput` dataclass and `validate_event`), and `ui/teacher.py` (PIN gate with `hmac.compare_digest`, `st.form` for title, description, team size, date).
-- **What I changed:** Kept the existing function name `render_teacher` in `ui/teacher.py` instead of the AI's `render_teacher_page`. Placed `config.py` and `validation.py` beside `db.py`, and `teacher.py` stayed in `ui/`.
-- **What broke:** Switching to Teacher showed a blank page. `app.py` had no branch for Teacher, so nothing rendered. Added an `else: teacher.render_teacher()` branch.
-- **Learned:** `export` prints nothing on success and only lasts for that terminal session. A blank Streamlit page usually means a missing route, not a crash.
-- **Tests:** 3 new `validate_event` tests (valid event, empty title, past date). Suite at 35 passing.
-- **Commit:** `feat: teacher event creation behind PIN gate`
-
-### Entry 2: About page
-- **Prompt:** Asked AI for Step 2, the About section explaining how matching works.
-- **AI output:** `ui/about.py` with "How matching works" and "Known limitations" text, wired into the sidebar.
-- **What broke:** The About text didn't match the code. It said grouping starts from the highest-scoring pair and referred to a function `group_students`. The real function is `form_teams`, which starts from the lowest student_id and adds the best mean-score fit. I caught this by reading `matcher.py` against the text.
-- **What I changed:** Rewrote the About text to match `matcher.py`: 60% skill complementarity, 40% availability overlap, greedy order-dependent grouping, a smaller last team possible, top 5 suggestions. Added the limitations: languages and event notes are not scored, availability is only three styles, and there is no real login.
-- **Learned:** Docs written from a description of the code drift from the code. Verify them against the source.
-- **Commit:** `feat: add About page explaining matching logic`
-
-### Entry 3: Matcher bug (empty skills)
-- **Found while:** Checking the About text against `matcher.py`.
-- **Bug:** `score_pair` computed `1 - jaccard(skills)`. Two empty skill sets give `jaccard = 0.0`, so a profile with no skills got the maximum complementarity score against everyone.
-- **Fix:** Added `NEUTRAL_COMPLEMENTARITY = 0.5`, used whenever either profile has no skills.
-- **Test:** Added `test_empty_skills_get_neutral_score` to `tests/test_matcher.py`. It checks that an empty-skills profile scores below a genuinely complementary one and that the score stays symmetric. Suite at 36 passing.
-- **Commits:** `fix: neutral skill score when a profile has no skills`, `docs: note neutral score for empty skills on About page`
-
-### Known issues carried forward
-- The shared PIN is not real authentication. The Thursday GitHub issue covers replacing it with role-based authentication.
-- `_slots_for` raises `ValueError` on an unknown availability style. This is safe only while the profile form offers the three styles.
