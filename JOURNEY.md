@@ -20,20 +20,20 @@
 #MY COURSE OF ACTION FOR CHOOSING THE TOPIC:
 - I told claude the present few issues and bits and pieces of what was going in my college right now:
       Okay so recently the 300 students across 3 batches have been divided in groups based on their performances but each group has similar things they are working on I'll givr you the idea from my group i.e. the group 1 the top 10 to 15 percentile. We are told that we have 2 major goals to achieve before the end of semester: 
-      1) 200 problems solved on codeforces (emerged from problem solving and python side of zenith) - we are given 3 problems daily to achieve that task by our problem solving teacher and few videos/leetcode by our python teacher/co-founder
-      2) a real end to end project (from fullstack side of things) - there has been minimal to no work on this end yet maybe we will be told what to do soon or perhaps we are expected to go on about it ourselves
-    
-    
+      (1) 200 problems solved on codeforces (emerged from problem solving and python side of zenith) - we are given 3 problems daily to achieve that task by our problem solving teacher and few videos/leetcode by our python teacher/co-founder
+      (2) a real end to end project (from fullstack side of things) - there has been minimal to no work on this end yet maybe we will be told what to do soon or perhaps we are expected to go on about it ourselves
+
+
       Another thing is whenever there are events there is a lot of miscommunication/communication gap among students like for example the 24 hour open source eval thing the teachers conduting it didnt know that we dont even know the basics of pull request and all on github and were expected to already know which resulted in a teacher teaching that amidst of that chaos. Also events like these clash with our exams etc at times
-    
-    
+
+
       The chaotic whatsapp thread example is very true the students majority of time spam stuff on groups even official making important things being lost in the spams
-    
-    
+
+
       From the student side friction whenever there is a open to all or mandatory thing coming up and you have to make teams of 4 or 3 among students it gets very chaotic and many end up even 3 days later saying in general whatsapp groupss that "im available for this and this project if anyone needs a teammate msg me".
-    
+
       Also thing is most examples you gave kike resources deadlines etc most of it is resolved only with the already existing LMS of zenith - website with student/teacher portals. These were all that came to mind for now ill add on if i rmr more issues
-    
+
 
 - After this prompt and claude's recommendation of few potential topics, I gave a feedback as how Zenith already has a LMS that solves a lot of issues but at the end we zoned in on the topic of a "team-matcher website" which emerged out as rally.
 
@@ -119,6 +119,7 @@
 - Keep logic separate from UI (the UI only calls logic functions).
 - Commit after every working step with a real message.
 - Log each AI prompt, output, change and breakage.
+- I guess now I also know bits and pieces of how to write a md file.
 
 #DAY BY DAY BRIEF:
 - For each day I went back to the chat and asked for that day's steps in more detail.
@@ -160,4 +161,6 @@ Errors:
 
 - _Thu: Docs and wrap-up_
  Screenshot of the working app, a fix so a non-ASCII PIN is handled and a clean error shows when the PIN is unset, the final README, and a markdown link fix in the README
+
+
 
